@@ -20,9 +20,11 @@ void printList(Node* list) {
     Node* curr = list;
 
     while (curr != NULL) {
-        printf("%s\n",curr->info);
+        printf("'%s' ",curr->info);
         curr = curr->next;
     }
+
+    printf("\n");
 }
 
 int isWhitespace(char* c){
@@ -50,6 +52,7 @@ char* listToString(Node* head){
         curr = curr->next;
         ind++;
     }
+
     string[ind] = '\0';
     return string;
 }
@@ -118,7 +121,7 @@ int underTheHood(char* str1, char* str2){
     if(str2 == NULL){
         return *str1;
     }
-    int index = 0;
+
     while(*str1 != '\0' && *str2 != '\0'){
         int diff = *str1-*str2;
         if(diff != 0){
@@ -127,34 +130,45 @@ int underTheHood(char* str1, char* str2){
         str1++;
         str2++;
     }
+
     if(*str1 == '\0' && *str2 == '\0'){
         return 0;
     }
     if(*str1 == '\0'){
-        return *str2;
+        return -(*str2);
     }
     if(*str2 == '\0'){
         return *str1;
     }
+
     return 0;
 }
 
 Node* appendToList(Node* head, Node* new){
-    if(head == NULL){
-        return new;
-    }
-    head->next = appendToList(head, new);
-    return head;
+   if (head==NULL && new==NULL){
+       return 0;
+   }
+   if(head == NULL){
+       return new;
+   } else if (new == NULL){
+       return head;
+   } else {
+       Node* curr = head;
+       Node* prev = NULL;
+       while(curr != NULL){
+           prev = curr;
+           curr = curr->next;
+       }
+       prev->next = new;
+   }
+   return head;
 }
 
 int insertionSort(void* toSort, int (*comparator)(void*, void*)){
     Node* dummyHead = toSort;
-    Node* head = dummyHead->next;
-
-    Node* curr = head;
+    Node* curr = dummyHead->next;
     Node* prev = NULL;
-    
-    printf("curr: %d\n", atoi(curr->info));
+
 
     while(curr != NULL){
         Node* ptr = dummyHead->next;
@@ -164,7 +178,7 @@ int insertionSort(void* toSort, int (*comparator)(void*, void*)){
             if(comparator(curr, ptr) < 0){
                 if(ptrPrev == NULL){
                     prev->next = curr->next;
-                    curr->next = head;
+                    curr->next = dummyHead->next;
                     dummyHead->next = curr;
                 } else {
                     prev->next = curr->next;
@@ -188,29 +202,47 @@ int insertionSort(void* toSort, int (*comparator)(void*, void*)){
 }
 
 int quickSort(void* toSort, int (*comparator)(void*, void*)){
-    Node* pivot = toSort;
+    Node* head = toSort;
+
+  
+    Node* pivot = head->next;
+   
+
     Node* less = NULL;
     Node* greater = NULL;
-    Node* curr = toSort;
     Node* prev = NULL;
 
-    if(curr == NULL || curr->next == NULL){
-
+    if(pivot == NULL || pivot->next == NULL){
+        return 0;
     }
-    while(curr != NULL){
-        Node* next = curr->next;
-        curr->next = NULL;
-     if(comparator(pivot->info, curr->info)>0){
-        less = appendToList(less, curr);
 
-     } else {
-         greater = appendToList(greater, curr);
-     }
+    Node* curr = pivot->next;
+     pivot->next = NULL;
+
+    while(curr != NULL){
+      Node* next = curr->next;
+      curr->next = NULL;
+
+      if(comparator(pivot, curr)>0){ 
+        less = appendToList(less, curr);
+      } else {
+        greater = appendToList(greater, curr);
+      }
+
      curr = next;
     }
-    quickSort(less, comparator);
-    quickSort(greater, comparator);
 
+//   printf("end1\n");
+      
+   Node* dummyNode1 = malloc(sizeof(Node));
+   dummyNode1->next = less;
+  
+   Node* dummyNode2 = malloc(sizeof(Node));
+   dummyNode2->next = greater;
+
+    quickSort(dummyNode1, comparator);
+    quickSort(dummyNode2, comparator);
+    head->next = appendToList(appendToList(dummyNode1->next, pivot),dummyNode2->next);
     return 0;
 }
 
@@ -236,8 +268,8 @@ int main(int argc, char** argv){
 
     Node* list = fileRead(fd);
     int isString = listIsString(list);
-    // printf("%d\n", isString);
-    // printList(list);
+    printf("is str: %d\n", isString);
+    printList(list);
     Node* dummyNode = malloc(sizeof(Node));
     dummyNode->next = list;
 
