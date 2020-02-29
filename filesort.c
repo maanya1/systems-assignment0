@@ -20,6 +20,19 @@ void fatalError(char* err_str) {
   exit(1);
 }
 
+void freeList(Node* list) {
+  if (list == NULL) {
+    return;
+  }
+
+  Node* next = list->next;
+
+  free(list->info);
+  free(list);
+
+  freeList(next);
+}
+
 void* mallocWithErrors(size_t size) {
   void* ptr = malloc(size);
   if (ptr == NULL) {
@@ -39,11 +52,9 @@ void printList(Node* list) {
   Node* curr = list;
 
   while (curr != NULL) {
-    printf("'%s' ", curr->info);
+    printf("%s\n", curr->info);
     curr = curr->next;
   }
-
-  printf("\n");
 }
 
 int lenList(Node* head) {
@@ -113,6 +124,8 @@ struct Node* fileRead(int fd) {
         }
       }
 
+      freeList(miniHead);
+
       miniHead = NULL;
       miniCurr = NULL;
     }
@@ -138,6 +151,8 @@ struct Node* fileRead(int fd) {
       curr = curr->next;
     }
   }
+
+  freeList(miniHead);
 
   return head;
 }
@@ -333,5 +348,8 @@ int main(int argc, char** argv) {
   }
 
   printList(dummyNode->next);
+  freeList(dummyNode);
+
+  close(fd);
   return 0;
 }
