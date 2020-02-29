@@ -94,6 +94,11 @@ struct Node* fileRead(int fd) {
   do {
     char* byt = mallocWithErrors(sizeof(char));
     byteCount = read(fd, byt, 1);
+
+    if (byteCount < 0) {
+      error("Could not read bytes.");
+    }
+
     if (isalpha(*byt) || isdigit(*byt) || *byt == '-') {
       Node* charNode = makeNode(byt);
       if (miniHead == NULL) {
@@ -178,7 +183,7 @@ int underTheHood(char* str1, char* str2) {
     str2++;
   }
 
-   return *str1 - *str2;
+  return *str1 - *str2;
 }
 
 int stringCompare(void* str1, void* str2) {
