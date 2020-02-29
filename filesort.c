@@ -1,9 +1,9 @@
+#include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <ctype.h>
 
 struct Node {
   char* info;
@@ -102,8 +102,6 @@ struct Node* fileRead(int fd) {
 
   return head;
 }
-
-
 
 int underTheHood(char* str1, char* str2) {
   if (str1 == NULL && str2 == NULL) {
