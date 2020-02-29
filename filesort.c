@@ -9,9 +9,10 @@ struct Node {
   char* info;
   struct Node* next;
 };
+
 typedef struct Node Node;
 
-void warning(char* warn_str) { printf("[Warning] %s", warn_str); }
+void warning(char* warn_str) { printf("[Warning] %s\n", warn_str); }
 
 void error(char* err_str) { printf("[Error] %s\n", err_str); }
 
@@ -177,17 +178,7 @@ int underTheHood(char* str1, char* str2) {
     str2++;
   }
 
-  if (*str1 == '\0' && *str2 == '\0') {
-    return 0;
-  }
-  if (*str1 == '\0') {
-    return -(*str2);
-  }
-  if (*str2 == '\0') {
-    return *str1;
-  }
-
-  return 0;
+   return *str1 - *str2;
 }
 
 int stringCompare(void* str1, void* str2) {
