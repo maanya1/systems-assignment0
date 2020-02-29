@@ -90,14 +90,17 @@ struct Node* fileRead(int fd) {
       miniCurr = NULL;
     }
   } while (byteCount > 0);
-  char* string = listToString(miniHead);
-  Node* charNode = makeNode(string);
-  if (head == NULL) {
-    head = charNode;
-    curr = charNode;
-  } else {
-    curr->next = charNode;
-    curr = curr->next;
+
+  if (miniHead != NULL) {  // Don't add empty token if it's at the end.
+    char* string = listToString(miniHead);
+    Node* charNode = makeNode(string);
+    if (head == NULL) {
+      head = charNode;
+      curr = charNode;
+    } else {
+      curr->next = charNode;
+      curr = curr->next;
+    }
   }
 
   return head;
