@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <ctype.h>
 
 struct Node {
   char* info;
@@ -101,13 +103,6 @@ struct Node* fileRead(int fd) {
   return head;
 }
 
-int stringCompare(void* str1, void* str2) {
-  Node* s1 = str1;
-  Node* s2 = str2;
-
-  return underTheHood(s1->info, s2->info);
-}
-
 int underTheHood(char* str1, char* str2) {
   if (str1 == NULL && str2 == NULL) {
     return 0;
@@ -139,6 +134,13 @@ int underTheHood(char* str1, char* str2) {
   }
 
   return 0;
+}
+
+int stringCompare(void* str1, void* str2) {
+  Node* s1 = str1;
+  Node* s2 = str2;
+
+  return underTheHood(s1->info, s2->info);
 }
 
 Node* appendToList(Node* head, Node* new) {
