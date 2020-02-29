@@ -11,6 +11,15 @@ struct Node {
 };
 typedef struct Node Node;
 
+void warning(char* warn_str) { printf("[Warning] %s", warn_str); }
+
+void error(char* err_str) { printf("[Error] %s\n", err_str); }
+
+void fatalError(char* err_str) {
+  printf("[Fatal Error] %s\n", err_str);
+  exit(1);
+}
+
 Node* makeNode(char* c) {
   Node* byt = malloc(sizeof(Node));
   byt->info = c;
