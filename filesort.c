@@ -38,8 +38,6 @@ void printList(Node* list) {
   printf("\n");
 }
 
-int isWhitespace(char* c) { return (*c == ' ' || *c == '\n' || *c == '\t'); }
-
 int lenList(Node* head) {
   Node* curr = head;
   int len = 0;
@@ -72,6 +70,7 @@ struct Node* fileRead(int fd) {
   Node* curr = NULL;
   Node* miniHead = NULL;
   Node* miniCurr = NULL;
+
   do {
     char* byt = malloc(sizeof(char));
     byteCount = read(fd, byt, 1);
@@ -86,21 +85,41 @@ struct Node* fileRead(int fd) {
       }
     }
     if (*byt == ',') {
-      char* string = listToString(miniHead);
-      Node* charNode = makeNode(string);
-      if (head == NULL) {
-        head = charNode;
-        curr = charNode;
-      } else {
-        curr->next = charNode;
-        curr = curr->next;
+      // Don't add lone dashes.
+      int is_lone_dash = 0;
+
+      if (miniHead != NULL) {
+        // If it's one char long and that char is a dash.
+        is_lone_dash = miniHead->next == NULL && *(miniHead->info) == '-';
       }
+
+      if (!is_lone_dash) {
+        char* string = listToString(miniHead);
+        Node* charNode = makeNode(string);
+        if (head == NULL) {
+          head = charNode;
+          curr = charNode;
+        } else {
+          curr->next = charNode;
+          curr = curr->next;
+        }
+      }
+
       miniHead = NULL;
       miniCurr = NULL;
     }
   } while (byteCount > 0);
 
-  if (miniHead != NULL) {  // Don't add empty token if it's at the end.
+  // Don't add lone dashes.
+  int is_lone_dash = 0;
+
+  if (miniHead != NULL) {
+    // If it's one char long and that char is a dash.
+    is_lone_dash = miniHead->next == NULL && *(miniHead->info) == '-';
+  }
+
+  // Don't add empty tokens or lone dashes at the end.
+  if (miniHead != NULL && !is_lone_dash) {
     char* string = listToString(miniHead);
     Node* charNode = makeNode(string);
     if (head == NULL) {
@@ -271,7 +290,15 @@ int listIsString(Node* head) {
 }
 
 int main(int argc, char** argv) {
-  int fd = open(argv[2], O_RDONLY | O_CREAT);
+  if (underTheHood(argv[1], "-i") != 0 && underTheHood(argv[1], "-q") != 0) {
+    fatalError("No sorting algorithm specified.");
+  }
+
+  int fd = open(argv[2], O_RDONLY);
+
+  if (fd < 0) {
+    fatalError("Invalid file.");
+  }
 
   Node* list = fileRead(fd);
   int isString = listIsString(list);
@@ -287,6 +314,10 @@ int main(int argc, char** argv) {
 
   if (underTheHood(argv[1], "-q") == 0) {
     quickSort(dummyNode, cmpr);
+  }
+
+  if (dummyNode->next == NULL) {
+    warning("File is empty.");
   }
 
   printList(dummyNode->next);
