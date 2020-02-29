@@ -20,8 +20,16 @@ void fatalError(char* err_str) {
   exit(1);
 }
 
+void* mallocWithErrors(size_t size) {
+  void* ptr = malloc(size);
+  if (ptr == NULL) {
+    error("Malloc returned null.");
+  }
+  return ptr;
+}
+
 Node* makeNode(char* c) {
-  Node* byt = malloc(sizeof(Node));
+  Node* byt = mallocWithErrors(sizeof(Node));
   byt->info = c;
   byt->next = NULL;
   return byt;
@@ -50,7 +58,7 @@ int lenList(Node* head) {
 
 char* listToString(Node* head) {
   int len = lenList(head);
-  char* string = malloc((sizeof(char) * len) + 1);
+  char* string = mallocWithErrors((sizeof(char) * len) + 1);
   Node* curr = head;
   int ind = 0;
 
@@ -72,7 +80,7 @@ struct Node* fileRead(int fd) {
   Node* miniCurr = NULL;
 
   do {
-    char* byt = malloc(sizeof(char));
+    char* byt = mallocWithErrors(sizeof(char));
     byteCount = read(fd, byt, 1);
     if (isalpha(*byt) || isdigit(*byt) || *byt == '-') {
       Node* charNode = makeNode(byt);
@@ -258,10 +266,10 @@ int quickSort(void* toSort, int (*comparator)(void*, void*)) {
     curr = next;
   }
 
-  Node* dummyNode1 = malloc(sizeof(Node));
+  Node* dummyNode1 = mallocWithErrors(sizeof(Node));
   dummyNode1->next = less;
 
-  Node* dummyNode2 = malloc(sizeof(Node));
+  Node* dummyNode2 = mallocWithErrors(sizeof(Node));
   dummyNode2->next = greater;
 
   quickSort(dummyNode1, comparator);
@@ -303,7 +311,7 @@ int main(int argc, char** argv) {
   Node* list = fileRead(fd);
   int isString = listIsString(list);
 
-  Node* dummyNode = malloc(sizeof(Node));
+  Node* dummyNode = mallocWithErrors(sizeof(Node));
   dummyNode->next = list;
 
   int (*cmpr)(void*, void*) = isString ? stringCompare : int_comparator;
