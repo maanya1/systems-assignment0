@@ -298,6 +298,10 @@ int listIsString(Node* head) {
 }
 
 int main(int argc, char** argv) {
+  if (argc < 2) {
+    fatalError("Arguments expected.");
+  }
+
   if (underTheHood(argv[1], "-i") != 0 && underTheHood(argv[1], "-q") != 0) {
     fatalError("No sorting algorithm specified.");
   }
